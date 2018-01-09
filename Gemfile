@@ -6,6 +6,11 @@ git_source(:github) do |repo_name|
 end
 
 gem 'coinbase'
+gem 'httparty'
+gem 'em-http-request', '~> 1.1', '>= 1.1.3'
+gem 'rufus-scheduler', '~> 3.2'
+gem 'resque', '~> 1.25', '>= 1.25.2'
+gem 'resque-scheduler'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.1.4'
 # Use postgresql as the database for Active Record
@@ -36,9 +41,14 @@ gem 'jbuilder', '~> 2.5'
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'pry'
+  gem 'pry-byebug'
+  gem 'pry-rails'
+  gem 'pry-remote'
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '~> 2.13'
   gem 'selenium-webdriver'
+  gem 'dotenv-rails', groups: [:development, :test]
 end
 
 group :development do

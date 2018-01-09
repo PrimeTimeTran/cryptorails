@@ -1,0 +1,5 @@
+fetch_current_price:
+  every: 60s
+  class: CR::Jobs::FetchPriceJob
+  args:
+  description: Runs the Price update method
