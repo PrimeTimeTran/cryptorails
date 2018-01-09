@@ -1,24 +1,17 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## CryptoRails Setup Instructions
+1. Clone the repo
+    - `git clone https://github.com/PrimeTimeTran/cryptorails`
 
-Things you may want to cover:
+2. Bundle Install
+    - `bundle install`
 
-* Ruby version
+3. Start the redis server
+    - `redis-server`
 
-* System dependencies
+4. Start the resque scheduler
+    - `rake resque:scheduler`
 
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+5. Start the rails server
+    - `rails s`
