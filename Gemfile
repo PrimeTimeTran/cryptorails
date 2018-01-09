@@ -5,10 +5,9 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
-gem 'coinbase'
+gem 'bcrypt', '~> 3.1.7'
 gem 'httparty'
-gem 'em-http-request', '~> 1.1', '>= 1.1.3'
-gem 'rufus-scheduler', '~> 3.2'
+gem 'jwt', '~> 1.0', '<= 1.5.2'
 gem 'resque', '~> 1.25', '>= 1.25.2'
 gem 'resque-scheduler'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
@@ -58,6 +57,7 @@ group :development do
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
+  gem 'rubocop', require: false
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
