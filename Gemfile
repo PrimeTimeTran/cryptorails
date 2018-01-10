@@ -6,6 +6,7 @@ git_source(:github) do |repo_name|
 end
 
 gem 'bcrypt', '~> 3.1.7'
+gem 'bunny'
 gem 'httparty'
 gem 'jwt', '~> 1.0', '<= 1.5.2'
 gem 'resque', '~> 1.25', '>= 1.25.2'
