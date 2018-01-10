@@ -1,6 +1,6 @@
 module CR
   module Jobs
-    class FetchPriceJob
+    class FetchPriceWorker
       @queue = :update_price
 
       COINBASE = ['BTC-USD', 'ETH-USD']
