@@ -1,6 +1,6 @@
 class Price < ApplicationRecord
-  belongs_to :market
-  belongs_to :coin
   extend Scopes
 
+  belongs_to :market
+  belongs_to :coin
 end

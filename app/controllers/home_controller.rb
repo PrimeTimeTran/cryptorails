@@ -5,7 +5,6 @@ class HomeController < ApplicationController
   BITFINEX = ['btcusd', 'ethusd', 'etcusd']
 
   def index
-    binding.pry
     @markets = Market.all
     json_response(@markets, :created)
   end
