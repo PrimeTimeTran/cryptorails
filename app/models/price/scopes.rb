@@ -45,6 +45,7 @@ class Price < ApplicationRecord
 
     def create_candlestick(group)
       {
+        date: group[0],
         open: opening_price(group[1]),
         close: closing_price(group[1]),
         low: lowest_price(group[1]),
@@ -74,10 +75,10 @@ class Price < ApplicationRecord
       prices = {}
 
       while first_price < time
-        previous_time = time - 300
-        current_time = time
+        earlier_time = time - 300
+        later_time = time
         prices[time] = []
-        r = Range.new(previous_time, current_time)
+        r = Range.new(earlier_time, later_time)
         Price.all.each do |price|
           prices[time] << price if r.cover?(price.created_at)
         end
@@ -87,15 +88,24 @@ class Price < ApplicationRecord
     end
 
     def candlestick_data
-      groups = {}
-      five_minute_prices.map do |group|
-        groups[group[0]] = create_candlestick(group)
+      prices = five_minute_prices.map do |group|
+        create_candlestick(group)
       end
-      groups
+      prices.reverse
     end
 
+    def write_to_tsv
+      CSV.open('prices.tsv', 'wb', { :col_sep => "\t" }) do |tsv|
+        tsv << ['Date', 'Open', 'Close', 'Low', 'High']
+        candlestick_data.each do |data|
+          tsv << [ data[:date], data[:open], data[:close], data[:low], data[:high] ]
+        end
+      end
+    end
   end
 end
+
+
 
 
 
