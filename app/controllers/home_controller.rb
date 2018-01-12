@@ -5,7 +5,14 @@ class HomeController < ApplicationController
   BITFINEX = ['btcusd', 'ethusd', 'etcusd']
 
   def index
-    @markets = Market.all
-    json_response(@markets, :created)
+    binding.pry
+    prices = Price.five_minute_prices
+    json_response(prices, :created)
+  end
+
+  private
+
+  def search_params
+    params.slice(:coin_id, :time, :exchange)
   end
 end
