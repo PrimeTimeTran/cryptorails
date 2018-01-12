@@ -5,8 +5,7 @@ class HomeController < ApplicationController
   BITFINEX = ['btcusd', 'ethusd', 'etcusd']
 
   def index
-    binding.pry
-    prices = Price.five_minute_prices
+    prices = Price.candlestick_data
     json_response(prices, :created)
   end
 

@@ -38,14 +38,34 @@ class Price < ApplicationRecord
 
 
 
+
+
+
     # Building data for front end
 
-    def open
-      price[1].inject {|memo, price| price.created_at < memo.created_at ? price : memo }
+    def create_candlestick(group)
+      {
+        open: opening_price(group[1]),
+        close: closing_price(group[1]),
+        low: lowest_price(group[1]),
+        high: highest_price(group[1])
+      }
     end
 
-    def close
-      price[1].inject {|memo, price| price.created_at < memo.created_at ? price : memo }
+    def opening_price(group)
+      group.inject {|memo, price| memo.created_at < price.created_at ? memo : price }.price
+    end
+
+    def closing_price(group)
+      group.inject {|memo, price| memo.created_at > price.created_at ? memo : price }.price
+    end
+
+    def highest_price(group)
+      group.collect {|p| p.price }.max
+    end
+
+    def lowest_price(group)
+      group.collect {|p| p.price }.min
     end
 
     def five_minute_prices
@@ -56,7 +76,7 @@ class Price < ApplicationRecord
       while first_price < time
         previous_time = time - 300
         current_time = time
-        prices[time.to_s] = []
+        prices[time] = []
         r = Range.new(previous_time, current_time)
         Price.all.each do |price|
           prices[time] << price if r.cover?(price.created_at)
@@ -65,6 +85,15 @@ class Price < ApplicationRecord
       end
       prices.reject { |key,value| value.empty? }
     end
+
+    def candlestick_data
+      groups = {}
+      five_minute_prices.map do |group|
+        groups[group[0]] = create_candlestick(group)
+      end
+      groups
+    end
+
   end
 end
 
