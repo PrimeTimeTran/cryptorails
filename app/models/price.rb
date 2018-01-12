@@ -1,4 +1,5 @@
 class Price < ApplicationRecord
+  include Filterable
   extend Scopes
 
   belongs_to :market
