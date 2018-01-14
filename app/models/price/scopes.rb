@@ -36,11 +36,6 @@ class Price < ApplicationRecord
       where('created_at >= ?', 1.week.ago)
     end
 
-
-
-
-
-
     # Building data for front end
 
     def create_candlestick(group)
@@ -96,7 +91,7 @@ class Price < ApplicationRecord
 
     def write_to_tsv
       CSV.open('prices.tsv', 'wb', { :col_sep => "\t" }) do |tsv|
-        tsv << ['Date', 'Open', 'Close', 'Low', 'High']
+        tsv << ['date', 'open', 'close', 'low', 'high']
         candlestick_data.each do |data|
           tsv << [ data[:date], data[:open], data[:close], data[:low], data[:high] ]
         end
@@ -104,17 +99,3 @@ class Price < ApplicationRecord
     end
   end
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
