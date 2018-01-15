@@ -1,5 +1,5 @@
 fetch_current_price:
-  every: 60s
+  every: 10s
   class: FetchPriceJob
   args:
   description: Grabs newest prices from public API of Coinbase & Bitfinex
