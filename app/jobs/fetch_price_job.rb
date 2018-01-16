@@ -11,7 +11,10 @@ class FetchPriceJob
       response = HTTParty.get(url)
       response = response.parsed_response
       price = response['data']['amount'].to_f
-      Price.create! price: price, currency: 'USD', market_id: 1, coin_id: index + 1
+      price = Price.create! price: price, currency: 'USD', market_id: 1, coin_id: index + 1
+      data = {}
+      data[:html] = response
+      ActionCable.server.broadcast "prices", data
     end
 
     # BITFINEX.each_with_index do |coin, index|

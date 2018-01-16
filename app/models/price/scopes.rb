@@ -36,8 +36,6 @@ class Price < ApplicationRecord
       where('created_at >= ?', 1.week.ago)
     end
 
-
-
     # Building data for front end
 
     def open
@@ -46,6 +44,31 @@ class Price < ApplicationRecord
 
     def close
       price[1].inject {|memo, price| price.created_at < memo.created_at ? price : memo }
+
+    def create_candlestick(group)
+      {
+        date: group[0],
+        open: opening_price(group[1]),
+        close: closing_price(group[1]),
+        low: lowest_price(group[1]),
+        high: highest_price(group[1])
+      }
+    end
+
+    def opening_price(group)
+      group.inject {|memo, price| memo.created_at < price.created_at ? memo : price }.price
+    end
+
+    def closing_price(group)
+      group.inject {|memo, price| memo.created_at > price.created_at ? memo : price }.price
+    end
+
+    def highest_price(group)
+      group.collect {|p| p.price }.max
+    end
+
+    def lowest_price(group)
+      group.collect {|p| p.price }.min
     end
 
     def five_minute_prices
@@ -54,10 +77,10 @@ class Price < ApplicationRecord
       prices = {}
 
       while first_price < time
-        previous_time = time - 300
-        current_time = time
-        prices[time.to_s] = []
-        r = Range.new(previous_time, current_time)
+        earlier_time = time - 300
+        later_time = time
+        prices[time] = []
+        r = Range.new(earlier_time, later_time)
         Price.all.each do |price|
           prices[time] << price if r.cover?(price.created_at)
         end
@@ -65,17 +88,21 @@ class Price < ApplicationRecord
       end
       prices.reject { |key,value| value.empty? }
     end
+
+    def candlestick_data
+      prices = five_minute_prices.map do |group|
+        create_candlestick(group)
+      end
+      prices.reverse
+    end
+
+    def write_to_tsv
+      CSV.open('prices.tsv', 'wb', { :col_sep => "\t" }) do |tsv|
+        tsv << ['date', 'open', 'close', 'low', 'high']
+        candlestick_data.each do |data|
+          tsv << [ data[:date], data[:open], data[:close], data[:low], data[:high] ]
+        end
+      end
+    end
   end
 end
-
-
-
-
-
-
-
-
-
-
-
-
