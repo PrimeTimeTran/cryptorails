@@ -93,6 +93,5 @@ class Price < ApplicationRecord
         end
       end
     end
-
   end
 end

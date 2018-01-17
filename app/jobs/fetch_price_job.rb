@@ -3,27 +3,32 @@
 class FetchPriceJob
   @queue = :update_price
 
-  # COINBASE = ['BTC-USD', 'ETH-USD']
-  # BITFINEX = ['btcusd', 'ethusd', 'etcusd']
-  COINBASE = ['BTC-USD'].freeze
-
   def self.perform
-    COINBASE.each_with_index do |coin, index|
-      url = "https://api.coinbase.com/v2/prices/#{coin}/spot"
-      response = HTTParty.get(url)
-      response = response.parsed_response
-      Price.create! price: price, currency: 'USD', market_id: 1, coin_id: index + 1
-      data = {}
-      data[:html] = response
-      ActionCable.server.broadcast 'prices', data
-    end
+    url = "https://api.coinbase.com/v2/prices/BTC-USD/spot"
+    response = HTTParty.get(url)
+    response = response.parsed_response
+    price = response['data']['amount'].to_i
+    Price.create! price: price, currency: 'USD', market_id: 1, coin_id: 1
+    FetchPriceJob.new.publish(response.to_json)
+  end
 
-    # BITFINEX.each_with_index do |coin, index|
-    #   url = "https://api.bitfinex.com/v1/pubticker/#{coin}"
-    #   response = HTTParty.get(url)
-    #   response = response.parsed_response
-    #   price = response['last_price'].to_f
-    #   Price.create! price: price, currency: 'USD', market_id: 1, coin_id: index + 1
-    # end
+  def publish(data)
+    channel.default_exchange.publish(data, routing_key: queue.name)
+    connection.close
+  end
+
+  def connection
+    @conn ||= begin
+    conn = Bunny.new ENV['CLOUDAMQP_URL']
+      conn.start
+    end
+  end
+
+  def channel
+    @channel ||= connection.create_channel
+  end
+
+  def queue
+    @queue ||= channel.queue 'current_prices'
   end
 end
