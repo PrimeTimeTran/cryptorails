@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Price < ApplicationRecord
   module Scopes
     def btc
@@ -16,34 +18,23 @@ class Price < ApplicationRecord
       created_at.to_date.to_s(:db)
     end
 
-    def weekly_highs
-      weekly_prices.map do |k, v|
-        v.max_by(&:price)
-      end
-    end
-
-    def weekly_lows
-      weekly_prices.map do |k, v|
-        v.min_by(&:price)
-      end
-    end
-
-    def weekly_prices
-      weekly.group_by{|x| x.created_at.strftime("%Y-%m-%d")}
-    end
-
     def weekly
       where('created_at >= ?', 1.week.ago)
     end
 
-    # Building data for front end
-
-    def open
-      price[1].inject {|memo, price| price.created_at < memo.created_at ? price : memo }
+    def weekly_highs
+      weekly_prices.map { |_, v| v.max_by(&:price) }
     end
 
-    def close
-      price[1].inject {|memo, price| price.created_at < memo.created_at ? price : memo }
+    def weekly_lows
+      weekly_prices.map { |_, v| v.min_by(&:price) }
+    end
+
+    def weekly_prices
+      weekly.group_by { |x| x.created_at.strftime('%Y-%m-%d') }
+    end
+
+    # Building data for front end
 
     def create_candlestick(group)
       {
@@ -56,19 +47,19 @@ class Price < ApplicationRecord
     end
 
     def opening_price(group)
-      group.inject {|memo, price| memo.created_at < price.created_at ? memo : price }.price
+      group.inject { |memo, price| memo.created_at < price.created_at ? memo : price }.price
     end
 
     def closing_price(group)
-      group.inject {|memo, price| memo.created_at > price.created_at ? memo : price }.price
+      group.inject { |memo, price| memo.created_at > price.created_at ? memo : price }.price
     end
 
     def highest_price(group)
-      group.collect {|p| p.price }.max
+      group.collect(&:price).max
     end
 
     def lowest_price(group)
-      group.collect {|p| p.price }.min
+      group.collect(&:price).min
     end
 
     def five_minute_prices
@@ -81,12 +72,10 @@ class Price < ApplicationRecord
         later_time = time
         prices[time] = []
         r = Range.new(earlier_time, later_time)
-        Price.all.each do |price|
-          prices[time] << price if r.cover?(price.created_at)
-        end
+        Price.all.each { |price| prices[time] << price if r.cover?(price.created_at) }
         time -= 300
       end
-      prices.reject { |key,value| value.empty? }
+      prices.reject { |_, value| value.empty? }
     end
 
     def candlestick_data
@@ -97,12 +86,13 @@ class Price < ApplicationRecord
     end
 
     def write_to_tsv
-      CSV.open('prices.tsv', 'wb', { :col_sep => "\t" }) do |tsv|
-        tsv << ['date', 'open', 'close', 'low', 'high']
+      CSV.open('prices.tsv', 'wb', col_sep: "\t") do |tsv|
+        tsv << %w[date open close low high]
         candlestick_data.each do |data|
-          tsv << [ data[:date], data[:open], data[:close], data[:low], data[:high] ]
+          tsv << [data[:date], data[:open], data[:close], data[:low], data[:high]]
         end
       end
     end
+
   end
 end

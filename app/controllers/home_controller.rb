@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class HomeController < ApplicationController
   skip_before_action :authorize_request, only: :index
 
@@ -6,7 +8,7 @@ class HomeController < ApplicationController
 
   def index
     prices = Price.candlestick_data
-    json_response(prices, :created)
+    json_response(prices, :ok)
   end
 
   private

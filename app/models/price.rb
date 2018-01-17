@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Price < ApplicationRecord
   include Filterable
   extend Scopes

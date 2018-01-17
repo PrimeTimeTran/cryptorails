@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class JsonWebToken
   HMAC_SECRET = Rails.application.secrets.secret_key_base
 
@@ -7,7 +9,7 @@ class JsonWebToken
   end
 
   def self.decode(token)
-    body = JWT.decode(token, HMAC_SECRET, true, { :algorithm => 'HS512' })[0]
+    body = JWT.decode(token, HMAC_SECRET, true, algorithm: 'HS512')[0]
     HashWithIndifferentAccess.new body
   rescue JWT::ExpiredSignature, JWT::VerificationError => e
     raise ExceptionHandler::ExpiredSignature, e.message
