@@ -9,13 +9,13 @@ module SendPriceJob
 
     ch  = conn.create_channel
     x   = ch.default_exchange
-    q   = ch.queue("current_prices")
+    q   = ch.queue('current_prices')
 
-    puts " [*] Waiting for current_prices. To exit press CTRL+C"
-
+    puts '[*] Waiting for current_prices. To exit press CTRL+C'
     begin
-      q.subscribe(:block => true) do |delivery_info, properties, body|
+      q.subscribe(block: true) do |_, _, body|
         puts "Now subscribed to the queue #{q}"
+        puts "Default queue:#{x}"
         puts " [x] #{body}"
         ActionCable.server.broadcast 'prices', body
       end
