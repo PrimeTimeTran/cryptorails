@@ -2,40 +2,6 @@
 
 class Price < ApplicationRecord
   module Scopes
-    def btc
-      where(coin_id: 1)
-    end
-
-    def eth
-      where(coin_id: 2)
-    end
-
-    def etc
-      where(coin_id: 3)
-    end
-
-    def daily
-      created_at.to_date.to_s(:db)
-    end
-
-    def weekly
-      where('created_at >= ?', 1.week.ago)
-    end
-
-    def weekly_highs
-      weekly_prices.map { |_, v| v.max_by(&:price) }
-    end
-
-    def weekly_lows
-      weekly_prices.map { |_, v| v.min_by(&:price) }
-    end
-
-    def weekly_prices
-      weekly.group_by { |x| x.created_at.strftime('%Y-%m-%d') }
-    end
-
-    # Building data for front end
-
     def create_candlestick(group)
       {
         date: group[0],
