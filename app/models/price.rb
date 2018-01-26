@@ -6,6 +6,10 @@ class Price < ApplicationRecord
   belongs_to :coin
   searchkick
 
+  def self.most_recent
+    { data: { base: "BTC", currency: "USD", amount: last.price }}
+  end
+
   def self.five_minute_intervals
     search(aggs: { five_minute_interval: { date_histogram: { field: 'created_at', interval: '5m' }}})
       .response['aggregations']['five_minute_interval']['buckets']
@@ -33,7 +37,6 @@ class Price < ApplicationRecord
     interval <<
       if i.dig('lowest', 'hits', 'hits').present?
         Hashie::Mash.new(
-          id: i.dig('key'),
           date: i.dig('open', 'hits', 'hits').first.dig('_source', 'created_at'),
           open: i.dig('open', 'hits', 'hits').first.dig('_source', 'price'),
           high: i.dig('highest', 'hits', 'hits').first.dig('_source', 'price'),
