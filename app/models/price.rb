@@ -51,7 +51,7 @@ class Price < ApplicationRecord
     Price.search(
       where: { coin_id: coin },
         body_options: {
-          aggs: { five_time_intervals: { date_histogram: { field: :created_at, interval: '5m', min_doc_count: 1 },
+          aggs: { five_time_intervals: { date_histogram: { field: :created_at, interval: '30m', min_doc_count: 1 },
               aggs: {
                 highest: { top_hits: { sort: [{ price: { order: 'desc' }}], _source: { includes: ['price'] }, size: 1 }},
                 lowest: { top_hits: { sort: [{ price: { order: 'asc' }}], _source: { includes: ['price'] }, size: 1 }},
@@ -64,3 +64,6 @@ class Price < ApplicationRecord
     )
   end
 end
+
+
+

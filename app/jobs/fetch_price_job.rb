@@ -4,7 +4,6 @@ class FetchPriceJob
   @queue = :update_price
 
   def self.perform
-    puts "Fetching data"
     url = 'https://api.coinbase.com/v2/prices/BTC-USD/spot'
     response = HTTParty.get(url)
     response = response.parsed_response
@@ -15,13 +14,14 @@ class FetchPriceJob
   end
 
   def publish(data)
-    channel.default_exchange.publish(data, routing_key: queue.name)
-    connection.close
+    # channel.default_exchange.publish(data, routing_key: queue.name)
+    # connection.close
+    queue.publish(data, routing_key: queue.name)
   end
 
   def connection
     @conn ||= begin
-      conn = Bunny.new ENV['CLOUDAMQP_URL']
+      conn = Bunny.new(host: "localhost", vhost: "/", user: "guest", password: "guest")
       conn.start
     end
   end
@@ -31,6 +31,6 @@ class FetchPriceJob
   end
 
   def queue
-    @queue ||= channel.queue 'current_prices'
+    @queue ||= channel.queue('current_prices')
   end
 end
