@@ -14,8 +14,6 @@ class FetchPriceJob
   end
 
   def publish(data)
-    # channel.default_exchange.publish(data, routing_key: queue.name)
-    # connection.close
     queue.publish(data, routing_key: queue.name)
   end
 

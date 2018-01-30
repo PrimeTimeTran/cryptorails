@@ -10,10 +10,9 @@ module SendPriceJob
     x   = ch.default_exchange
     q   = ch.queue('current_prices')
     begin
-      # Let them know we've received the message. Acknowledge the message.
-      # Set up our own RabbitMQ
-      q.subscribe(block: true) do |_, _, body|
+      q.subscribe(block: true, manual_ack: true) do |delivery_info, properties, body|
         ActionCable.server.broadcast 'prices', body
+        ch.acknowledge(delivery_info.delivery_tag, false)
       end
     rescue Interrupt => _
       ch.close
@@ -21,16 +20,3 @@ module SendPriceJob
     end
   end
 end
-
-# time = Time.now
-# price = 10000
-
-# 1000.times do
-#   Price.create! coin_id: 1, market_id: 1, price: price, currency: 'USD', created_at: time
-#   4.times do
-#     Price.create! coin_id: 1, market_id: 1, price: price + rand(-200..200), currency: 'USD', created_at: time
-#     time += 60
-#   end
-#   time += 60
-#   price += rand(-400..410)
-# end
