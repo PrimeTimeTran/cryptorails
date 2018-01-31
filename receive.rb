@@ -1,5 +1,7 @@
-# require "bunny"
-# require "thread"
+# frozen_string_literal: true
+
+# require 'bunny'
+# require 'thread'
 
 # conn = Bunny.new(:automatically_recover => false)
 # conn.start
@@ -16,7 +18,7 @@
 #     @x              = ch.default_exchange
 
 #     @server_queue   = server_queue
-#     @reply_queue    = ch.queue("", :exclusive => true)
+#     @reply_queue    = ch.queue('', :exclusive => true)
 
 #     @lock      = Mutex.new
 #     @condition = ConditionVariable.new
@@ -59,11 +61,9 @@
 # ch.close
 # conn.close
 
+require bunny
 
-
-require "bunny"
-
-puts "=> Subscribing for messages using explicit acknowledgements model"
+puts => Subscribing for messages using explicit acknowledgements model
 puts
 
 connection1 = Bunny.new
@@ -81,8 +81,8 @@ ch2 = connection2.create_channel
 
 ch3 = connection3.create_channel
 
-x   = ch3.direct("amq.direct")
-q1  = ch1.queue("bunny.examples.acknowledgements.explicit", :auto_delete => false)
+x   = ch3.direct('amq.direct')
+q1  = ch1.queue('bunny.examples.acknowledgements.explicit', :auto_delete => false)
 q1.purge
 
 q1.bind(x).subscribe(:manual_ack => true, :block => false) do |delivery_info, properties, payload|
@@ -101,7 +101,7 @@ q1.bind(x).subscribe(:manual_ack => true, :block => false) do |delivery_info, pr
   end
 end
 
-q2   = ch2.queue("bunny.examples.acknowledgements.explicit", :auto_delete => false)
+q2   = ch2.queue('bunny.examples.acknowledgements.explicit', :auto_delete => false)
 q2.bind(x).subscribe(:manual_ack => true, :block => false) do |delivery_info, properties, payload|
   # do some work
   sleep(0.2)
@@ -125,7 +125,7 @@ t2 = Thread.new do
   sleep 4.0
 
   connection1.close
-  puts "----- Connection 1 is now closed (we pretend that it has crashed) -----"
+  puts '----- Connection 1 is now closed (we pretend that it has crashed) -----'
 end
 t2.abort_on_exception = true
 

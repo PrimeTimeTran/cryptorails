@@ -4,5 +4,7 @@ AllCops:
 
 AllCops:
   Exclude:
-    - 'kibana'
+    - 'kibana/*'
     - 'db/schema.rb'
+    - 'receive.rb'
+    - 'send.rb'

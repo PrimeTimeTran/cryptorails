@@ -17,7 +17,7 @@ class Price < ApplicationRecord
     end
 
     def closing_price(group)
-      group.inject {  |memo, price| memo.created_at > price.created_at ? memo : price }.price
+      group.inject { |memo, price| memo.created_at > price.created_at ? memo : price }.price
     end
 
     def highest_price(group)

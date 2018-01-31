@@ -4,6 +4,7 @@ class FetchPriceJob
   @queue = :update_price
 
   def self.perform
+    puts "\n\n\n\n FetchPriceJob"
     url = 'https://api.coinbase.com/v2/prices/BTC-USD/spot'
     response = HTTParty.get(url)
     response = response.parsed_response
@@ -19,7 +20,7 @@ class FetchPriceJob
 
   def connection
     @conn ||= begin
-      conn = Bunny.new(host: "localhost", vhost: "/", user: "guest", password: "guest")
+      conn = Bunny.new(host: 'localhost', vhost: '/', user: 'guest', password: 'guest')
       conn.start
     end
   end

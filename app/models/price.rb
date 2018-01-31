@@ -7,29 +7,11 @@ class Price < ApplicationRecord
   searchkick
 
   def self.most_recent
-    { data: { base: "BTC", currency: "USD", amount: last.price }}
+    { data: { base: 'BTC', currency: 'USD', amount: last.price } }
   end
 
-  def self.five_minute_intervals
-    search(aggs: { five_minute_interval: { date_histogram: { field: 'created_at', interval: '5m' }}})
-      .response['aggregations']['five_minute_interval']['buckets']
-  end
-
-  def self.recent_prices(coin = 1)
-    search = self.search(
-      where: { coin_id: coin },
-        body_options: {
-          aggs: { five_time_intervals: { date_histogram: { field: :created_at, interval: '5m', min_doc_count: 1 },
-              aggs: {
-                highest: { top_hits: { sort: [{ price: { order: 'desc' }}], _source: { includes: ['price'] }, size: 1 }},
-                lowest: { top_hits: { sort: [{ price: { order: 'asc' }}], _source: { includes: ['price'] }, size: 1 }},
-                open: { top_hits: { sort: [{ created_at: { order: 'asc' }}], _source: { includes: ['price', 'created_at'] }, size: 1 }},
-                close: { top_hits: { sort: [{ created_at: { order: 'desc' }}], _source: { includes: ['price']}, size: 1 }}
-              }
-            }
-          }
-        }
-    )
+  def self.recent_prices
+    search = query_elastic
 
     return [] unless search.aggregations.present?
     time_intervals = search.aggregations.dig('five_time_intervals', 'buckets')
@@ -47,20 +29,20 @@ class Price < ApplicationRecord
     end
   end
 
-  def query_elastic(coin = 1)
-    Price.search(
+  def self.query_elastic(coin = 1)
+    search(
       where: { coin_id: coin },
         body_options: {
-          aggs: { five_time_intervals: { date_histogram: { field: :created_at, interval: '30m', min_doc_count: 1 },
-              aggs: {
-                highest: { top_hits: { sort: [{ price: { order: 'desc' }}], _source: { includes: ['price'] }, size: 1 }},
-                lowest: { top_hits: { sort: [{ price: { order: 'asc' }}], _source: { includes: ['price'] }, size: 1 }},
-                open: { top_hits: { sort: [{ created_at: { order: 'asc' }}], _source: { includes: ['price', 'created_at'] }, size: 1 }},
-                close: { top_hits: { sort: [{ created_at: { order: 'desc' }}], _source: { includes: ['price']}, size: 1 }}
-              }
+          aggs: { five_time_intervals: { date_histogram: { field: :created_at, interval: '5m', min_doc_count: 1 },
+            aggs: {
+              highest: { top_hits: { sort: [{ price: { order: 'desc' } }], _source: { includes: ['price'] }, size: 1 } },
+              lowest: { top_hits: { sort: [{ price: { order: 'asc' } }], _source: { includes: ['price'] }, size: 1 } },
+              open: { top_hits: { sort: [{ created_at: { order: 'asc' } }], _source: { includes: ['price', 'created_at'] }, size: 1 } },
+              close: { top_hits: { sort: [{ created_at: { order: 'desc' } }], _source: { includes: ['price'] }, size: 1 } }
             }
           }
         }
+      }
     )
   end
 end
