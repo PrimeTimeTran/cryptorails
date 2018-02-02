@@ -10,8 +10,8 @@ class Price < ApplicationRecord
     { data: { base: 'BTC', currency: 'USD', amount: last.price } }
   end
 
-  def self.recent_prices
-    search = query_elastic
+  def self.recent_prices(query = 1)
+    search = query_elastic(query)
 
     return [] unless search.aggregations.present?
     time_intervals = search.aggregations.dig('five_time_intervals', 'buckets')

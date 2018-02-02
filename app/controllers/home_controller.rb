@@ -7,7 +7,12 @@ class HomeController < ApplicationController
   BITFINEX = ['btcusd', 'ethusd', 'etcusd']
 
   def index
-    prices = Price.recent_prices
+    if params[:q]
+
+      prices = Price.recent_prices(params[:q])
+    else
+      prices = Price.recent_prices
+    end
     json_response(prices, :ok)
   end
 
