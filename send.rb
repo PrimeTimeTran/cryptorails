@@ -59,9 +59,9 @@ end
 # price = 10000
 
 # 1000.times do
-#   Price.create! coin_id: 1, market_id: 1, price: price, currency: 'USD', created_at: time
+#   Price.create! coin_id: 1, market_id: 3, price: price, currency: 'USD', created_at: time
 #   4.times do
-#     Price.create! coin_id: 1, market_id: 1, price: price + rand(-200..200), currency: 'USD', created_at: time
+#     Price.create! coin_id: 1, market_id: 3, price: price + rand(-200..200), currency: 'USD', created_at: time
 #     time += 60
 #   end
 #   time += 60

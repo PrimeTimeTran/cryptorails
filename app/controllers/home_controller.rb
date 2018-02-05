@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
 class HomeController < ApplicationController
-  skip_before_action :authorize_request, only: :index
+  skip_before_action :authorize_request, only: [:index, :show]
 
   COINBASE = ['BTC-USD', 'ETH-USD']
   BITFINEX = ['btcusd', 'ethusd', 'etcusd']
 
   def index
-    if params[:q]
+    prices = Price.recent_prices
+    json_response(prices, :ok)
+  end
 
-      prices = Price.recent_prices(params[:q])
-    else
-      prices = Price.recent_prices
-    end
+  def show
+    prices = Price.recent_prices(params[:id].to_i, 1)
     json_response(prices, :ok)
   end
 

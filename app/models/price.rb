@@ -10,8 +10,8 @@ class Price < ApplicationRecord
     { data: { base: 'BTC', currency: 'USD', amount: last.price } }
   end
 
-  def self.recent_prices(query = 1)
-    search = query_elastic(query)
+  def self.recent_prices(market_id = 1, coin = 1)
+    search = query_elastic(market_id, coin)
 
     return [] unless search.aggregations.present?
     time_intervals = search.aggregations.dig('five_time_intervals', 'buckets')
@@ -29,9 +29,9 @@ class Price < ApplicationRecord
     end
   end
 
-  def self.query_elastic(coin = 1)
+  def self.query_elastic(market_id = 1, coin = 1)
     search(
-      where: { coin_id: coin },
+      where: { market_id: market_id, coin_id: coin },
         body_options: {
           aggs: { five_time_intervals: { date_histogram: { field: :created_at, interval: '5m', min_doc_count: 1 },
             aggs: {
