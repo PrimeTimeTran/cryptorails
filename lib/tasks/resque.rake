@@ -3,7 +3,6 @@
 require 'resque/tasks'
 require 'resque/scheduler/tasks'
 
-task 'resque:setup' => :environment
 namespace :resque do
   task :setup do
     require 'resque'
@@ -32,7 +31,7 @@ namespace :resque do
     # less code that resque-scheduler needs to know about. But in a small
     # project, it's usually easier to just include you job classes here.
     # So, something like this:
-    # require 'jobs'
+    require 'jobs'
   end
 
   task :scheduler => :setup_schedule

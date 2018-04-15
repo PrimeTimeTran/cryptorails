@@ -7,7 +7,7 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 time = Time.now
-price = 7000
+price = 10000
 
 250.times do
   Price.create! coin_id: 1, market_id: 3, price: price, currency: 'USD', created_at: time
