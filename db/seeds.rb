@@ -1,20 +1,30 @@
-# frozen_string_literal: true
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the rails db:seed command (or created alongside the database with db:setup).
-#
-# Examples:
-#
-#   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
-#   Character.create(name: 'Luke', movie: movies.first)
-time = Time.now
-price = 10000
 
-250.times do
-  Price.create! coin_id: 1, market_id: 3, price: price, currency: 'USD', created_at: time
-  4.times do
-    Price.create! coin_id: 1, market_id: 3, price: price + rand(-200..200), currency: 'USD', created_at: time
+if Coin.first.nil?
+  puts "Seeding Coins:"
+  Coin.create! name: 'BitCoin'
+  Coin.create! name: 'Ethereum'
+  Coin.create! name: 'Ethereum Classic'
+end
+
+if Market.first.nil?
+  puts "Seeding Markets:"
+  Market.create! name: 'Coinbase'
+  Market.create! name: 'Bitfinex'
+  Market.create! name: 'Bittrex'
+end
+
+if Price.count == 0
+  time = Time.now
+  price = 10000
+  250.times do
+    coin =  Price.new coin_id: 1, market_id: 1, price: price, currency: 'USD', created_at: time
+    coin.save
+    4.times do
+      coin = Price.new coin_id: 1, market_id: 1, price: price + rand(-200..200), currency: 'USD', created_at: time
+      coin.save
+      time += 60
+    end
     time += 60
+    price += rand(-400..410)
   end
-  time += 60
-  price += rand(-400..410)
 end
